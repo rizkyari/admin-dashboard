@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { RouterView } from 'vue-router';
 </script>
 
 <template>
   <div>
-    <h1 class="text-3xl font-bold text-red-500 underline">Teat</h1>
+    <RouterView/>
   </div>
 </template>
 
