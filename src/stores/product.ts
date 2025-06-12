@@ -19,6 +19,14 @@ export interface Product {
     images: string[];
 }
 
+export interface ProductPayload {
+    title: string;
+    price: number;
+    description: string;
+    categoryId: number;
+    images: string[];
+}
+
 interface Filters {
     title?: string;
     price?: number | null;
@@ -82,12 +90,37 @@ export const useProductStore = defineStore("product", {
                 this.detailLoad = false;
             }
         },
+        async updateProduct(id: number, data: Partial<Product>) {
+            this.loading = true;
+            this.error = null;
+            try {
+                await api.put(`/products/${id}`, data);
+            } catch (err: any) {
+                this.error = err.message || 'Failed to update product'
+            } finally {
+                this.loading = false;
+            }
+        },
         async deleteProduct(id: number) {
             this.loading = true;
             try {
                 await api.delete(`/products/${id}`);
             } catch (err : any) {
                 this.error = err.message || "Failed to delete product"
+            } finally {
+                this.loading = false;
+            }
+        },
+        async createProduct(payload: ProductPayload) {
+            this.loading = true;
+            this.error = null;
+
+            try {
+                await api.post(`/products`, payload);
+                return true;
+            } catch (err: any) {
+                this.error =  err.message || 'Failed to create product';
+                return false;               
             } finally {
                 this.loading = false;
             }

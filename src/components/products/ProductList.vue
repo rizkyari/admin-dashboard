@@ -23,6 +23,14 @@
             :loading="store.detailLoad"
             @close="closeModal"
             @delete="handleDelete"
+            @edit="handleEdit"
+        />
+        <ProductEditModal
+            v-if="showEditModal"
+            :show="showEditModal"
+            :product="editFormData"
+            @close="showEditModal = false"
+            @save="handleSaveEdit"
         />
         <ConfirmModal
             v-if="showConfirmDelete"
@@ -45,12 +53,15 @@ import Pagination from './Pagination.vue';
 import ProductFilter from './ProductFilter.vue';
 import ProductDetailModal from './ProductDetailModal.vue';
 import ConfirmModal from '../ConfirmModal.vue';
+import ProductEditModal from './ProductEditModal.vue';
 
 const store = useProductStore();
 const selectedProduct = ref<Product | null>(null);
 const showModal = ref(false);
 const showConfirmDelete = ref(false);
 const productToDelete = ref<number | null>(null);
+const showEditModal = ref(false);
+const editFormData = ref<any>(null);
 
 onMounted(() => {
     store.fetchProducts();
@@ -91,5 +102,20 @@ async function confirmDelete() {
         showConfirmDelete.value = false;
         store.fetchProducts();
     }
+}
+
+function handleEdit(product: Product) {
+    editFormData.value = { ...product };
+    selectedProduct.value = product;
+    showEditModal.value = true;
+}
+
+async function handleSaveEdit(updated: any) {
+    if(!selectedProduct.value) return
+
+    await store.updateProduct(selectedProduct.value.id, updated);
+    closeModal();
+    showEditModal.value = false;
+    store.fetchProducts();
 }
 </script>
