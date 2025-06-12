@@ -9,16 +9,19 @@ export function useLogin() {
     const email = ref('');
     const password = ref('');
     const error = ref('');
+    const loading = ref(false);
 
     const handleLogin = async () => {
         error.value = '';
-        console.log(email.value, password.value);
+        loading.value = true;
         
         try {
             await auth.login(email.value, password.value);
             router.push('/dashboard')
         } catch (err) {
             error.value = 'Login Failed'
+        } finally {
+            loading.value = false;
         }
     };
 
@@ -26,6 +29,7 @@ export function useLogin() {
         email,
         password,
         error,
+        loading,
         handleLogin,
     }
 }
