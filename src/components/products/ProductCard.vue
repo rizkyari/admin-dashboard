@@ -1,5 +1,5 @@
 <template>
-    <div class="border rounded-lg p-4 shadow hover:shadow-md transition">
+    <div @click="$emit('click')" class="border rounded-lg p-4 shadow hover:shadow-md transition">
         <img :src="product.images[0]" alt="Product Image" class="w-full h-40 object-cover rounded"/>
         <h3 class="mt-2 font-bold text-lg">{{ product.title }}</h3>
         <p class="text-gray-600 text-sm mt-1 truncate">{{ product.description }}</p>
