@@ -11,6 +11,12 @@ const router = createRouter({
             meta: {requiresAdmin: false},
         },
         {
+            path: '/register',
+            name: 'Register',
+            component: () => import('../views/Register.vue'),
+            meta: {requiresAdmin: false},
+        },
+        {
             path: '/dashboard',
             name: 'Dashboard',
             component: () => import('../views/Dashboard.vue'),
@@ -39,7 +45,7 @@ router.beforeEach((to, _from, next) => {
     const auth = useAuthStore();
     auth.initFromStorage();
 
-    const publicPages = ['/login'];
+    const publicPages = ['/login', '/register'];
     const authRequired = !publicPages.includes(to.path);
     const isLoggedIn = !!auth.token;
 

@@ -7,6 +7,15 @@ interface AuthState {
     name: string;
     role: string;
     avatar: string;
+    loading: boolean;
+}
+
+interface RegisterPayload {
+    name: string;
+    email: string;
+    password: string;
+    avatar: string;
+    role?: string;
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -16,6 +25,7 @@ export const useAuthStore = defineStore('auth', {
         name: localStorage.getItem('name') || '',
         role: localStorage.getItem('role') || '',
         avatar: localStorage.getItem('avatar') || '',
+        loading: false,
     }),
     actions: {
         async login(email: string, password: string) {
@@ -42,6 +52,17 @@ export const useAuthStore = defineStore('auth', {
             } catch (error) {
                 console.error('Login failed', error);
                 throw error;
+            }
+        },
+        async register(payload: RegisterPayload) {
+            this.loading = true
+            try {
+                const res = await api.post(`/users`, payload);
+                return res.data
+            } catch (error: any) {
+                throw new Error(error.response?.data?.message || 'Registration failed');
+            } finally {
+                this.loading = false;
             }
         },
         logout() {
