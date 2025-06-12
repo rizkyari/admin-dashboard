@@ -82,6 +82,16 @@ export const useProductStore = defineStore("product", {
                 this.detailLoad = false;
             }
         },
+        async deleteProduct(id: number) {
+            this.loading = true;
+            try {
+                await api.delete(`/products/${id}`);
+            } catch (err : any) {
+                this.error = err.message || "Failed to delete product"
+            } finally {
+                this.loading = false;
+            }
+        },
         setFilters(filters: Filters) {
             this.filters = filters;
             this.page = 1;

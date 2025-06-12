@@ -22,6 +22,15 @@
             :show="showModal"
             :loading="store.detailLoad"
             @close="closeModal"
+            @delete="handleDelete"
+        />
+        <ConfirmModal
+            v-if="showConfirmDelete"
+            :show="showConfirmDelete"
+            message="Are you sure you want to delete this product?"
+            confirmText="Delete"
+            @confirm="confirmDelete"
+            @cancel="showConfirmDelete = false"
         />
     </div>
 </template>
@@ -35,10 +44,13 @@ import ProductSkeleton from './ProductSkeleton.vue';
 import Pagination from './Pagination.vue';
 import ProductFilter from './ProductFilter.vue';
 import ProductDetailModal from './ProductDetailModal.vue';
+import ConfirmModal from '../ConfirmModal.vue';
 
 const store = useProductStore();
 const selectedProduct = ref<Product | null>(null);
 const showModal = ref(false);
+const showConfirmDelete = ref(false);
+const productToDelete = ref<number | null>(null);
 
 onMounted(() => {
     store.fetchProducts();
@@ -59,11 +71,25 @@ function handleFilterApply(filters: Record<string, any>) {
 }
 
 function openModal(product: Product) {
-  selectedProduct.value = product;
-  showModal.value = true;
+    selectedProduct.value = product;
+    showModal.value = true;
 }
 
 function closeModal() {
-  showModal.value = false;
+    showModal.value = false;
+}
+
+function handleDelete(id: number) {
+    productToDelete.value = id;
+    showConfirmDelete.value = true;
+}
+
+async function confirmDelete() {
+    if (productToDelete.value !== null) {
+        await store.deleteProduct(productToDelete.value);
+        closeModal();
+        showConfirmDelete.value = false;
+        store.fetchProducts();
+    }
 }
 </script>
