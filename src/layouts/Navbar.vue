@@ -1,5 +1,8 @@
 <template>
     <header class="bg-white shadow p-4 flex justify-between items-center">
+        <button class="lg:hidden text-gray-700 mr-2">
+             &#x2630;
+        </button>
         <h2 class="text-xl font-semibold">Dashboard</h2>
         <div class="flex items-center gap-3">
             <img :src="auth.avatar" class="w-8 h-8 rounded-full"/>
