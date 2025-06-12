@@ -29,12 +29,6 @@ const router = createRouter({
             meta: {requiresAdmin: true}
         },
         {
-            path: '/create-product',
-            name: 'Create Products',
-            component: () => import('../views/CreateProduct.vue'),
-            meta: {requiresAdmin: true}
-        },
-        {
             path: '/',
             redirect: '/dashboard',
         },

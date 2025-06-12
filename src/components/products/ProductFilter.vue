@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, onBeforeMount  } from 'vue';
 import { useProductStore } from '../../stores/product';
 import { useCategoryStore } from '../../stores/category';
 
@@ -89,6 +89,10 @@ function resetFilters() {
 onMounted(() => {
     category.fetchCategories();
 });
+
+onBeforeMount(() => {
+    resetFilters();
+})
 </script>
 
 <style scoped>

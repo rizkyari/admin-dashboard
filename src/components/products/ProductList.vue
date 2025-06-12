@@ -1,7 +1,9 @@
 <template>
     <div class="p-6">
-        <h2 class="text-2xl font-bold mb-4">All Products</h2>
-
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-bold mb-4">All Products</h2>
+            <button @click="openCreateModal" class="bg-green-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-500">+ Add</button>
+        </div>
         <ProductFilter @apply-filters="handleFilterApply"/>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <ProductSkeleton v-if="store.loading" v-for="n in 10" :key="n"/>
@@ -32,6 +34,12 @@
             @close="showEditModal = false"
             @save="handleSaveEdit"
         />
+        <ProductCreateModal
+            v-if="showCreateModal"
+            :show="showCreateModal"
+            @close="showCreateModal = false"
+            @submit="handleSubmit"
+        />
         <ConfirmModal
             v-if="showConfirmDelete"
             :show="showConfirmDelete"
@@ -47,6 +55,7 @@
 import { ref, onMounted } from 'vue';
 import { useProductStore } from '../../stores/product';
 import type {Product} from '../../stores/product'
+import type { ProductPayload } from '../../stores/product';
 import ProductCard from './ProductCard.vue';
 import ProductSkeleton from './ProductSkeleton.vue';
 import Pagination from './Pagination.vue';
@@ -54,6 +63,7 @@ import ProductFilter from './ProductFilter.vue';
 import ProductDetailModal from './ProductDetailModal.vue';
 import ConfirmModal from '../ConfirmModal.vue';
 import ProductEditModal from './ProductEditModal.vue';
+import ProductCreateModal from './ProductCreateModal.vue';
 
 const store = useProductStore();
 const selectedProduct = ref<Product | null>(null);
@@ -62,6 +72,7 @@ const showConfirmDelete = ref(false);
 const productToDelete = ref<number | null>(null);
 const showEditModal = ref(false);
 const editFormData = ref<any>(null);
+const showCreateModal = ref(false);
 
 onMounted(() => {
     store.fetchProducts();
@@ -84,6 +95,10 @@ function handleFilterApply(filters: Record<string, any>) {
 function openModal(product: Product) {
     selectedProduct.value = product;
     showModal.value = true;
+}
+
+function openCreateModal() {
+    showCreateModal.value = true;
 }
 
 function closeModal() {
@@ -117,5 +132,12 @@ async function handleSaveEdit(updated: any) {
     closeModal();
     showEditModal.value = false;
     store.fetchProducts();
+}
+
+async function handleSubmit(payload: ProductPayload) {
+  const success = await store.createProduct(payload);
+  if (success) {
+    showCreateModal.value = false
+  }
 }
 </script>
