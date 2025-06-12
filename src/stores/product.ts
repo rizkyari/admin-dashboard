@@ -82,6 +82,17 @@ export const useProductStore = defineStore("product", {
                 this.detailLoad = false;
             }
         },
+        async updateProduct(id: number, data: Partial<Product>) {
+            this.loading = true;
+            this.error = null;
+            try {
+                await api.put(`/products/${id}`, data);
+            } catch (err: any) {
+                this.error = err.message || 'Failed to update product'
+            } finally {
+                this.loading = false;
+            }
+        },
         async deleteProduct(id: number) {
             this.loading = true;
             try {
