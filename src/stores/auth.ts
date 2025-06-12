@@ -1,65 +1,63 @@
 import { defineStore } from "pinia";
-import axios from "axios";
-import {jwtDecode} from 'jwt-decode';
-import environment from "../config/environment";
+import api from '../lib/axios';
 
 interface AuthState {
     token: string;
-    role: string;
     refreshToken: string;
-}
-
-interface DecodeJWT {
+    name: string;
     role: string;
-    exp: number;
-    iat: number
+    avatar: string;
 }
 
 export const useAuthStore = defineStore('auth', {
     state: (): AuthState => ({
         token: localStorage.getItem('token') || '',
         refreshToken: localStorage.getItem('refreshToken') || '',
-        role: '',
+        name: localStorage.getItem('name') || '',
+        role: localStorage.getItem('role') || '',
+        avatar: localStorage.getItem('avatar') || '',
     }),
     actions: {
         async login(email: string, password: string) {
-            const res = await axios.post(`${environment.API_URL}`,{
-                email,
-                password,
-            });
+            try {
+                const res = await api.post(`/auth/login`,{
+                    email,
+                    password,
+                });
+    
+                this.token = res.data.access_token;
+                this.refreshToken = res.data.refresh_token;
+    
+                localStorage.setItem('token', this.token);
+                localStorage.setItem('refreshToken', this.refreshToken);
+    
+                const profile = await api.get('/auth/profile');
+                this.name = profile.data.name;
+                this.role = profile.data.role;
+                this.avatar = profile.data.avatar;
 
-            const accessToken: string = res.data.access_token;
-            const refreshToken: string = res.data.refresh_token;
-            const decoded: DecodeJWT = jwtDecode(accessToken);
-
-            this.token = accessToken;
-            this.refreshToken = refreshToken;
-            this.role = decoded.role;
-            
-            localStorage.setItem('token', accessToken);
-            localStorage.setItem('refreshToken', refreshToken);
+                localStorage.setItem('name', this.name);
+                localStorage.setItem('role', this.role);
+                localStorage.setItem('avatar', this.avatar);
+            } catch (error) {
+                console.error('Login failed', error);
+                throw error;
+            }
         },
         logout() {
             this.token = '';
             this.refreshToken = '';
+            this.name = '';
             this.role = '';
-            localStorage.removeItem('token');
-            localStorage.removeItem('refreshToken');
+            this.avatar = '';
+            localStorage.clear();
         },
         initFromStorage() {
-            const token = localStorage.getItem('token');
-            const refreshToken = localStorage.getItem('refreshToken');
-            if(token) {
-                this.token = token;
-                this.refreshToken = refreshToken || '';
-                try {
-                    const decoded: DecodeJWT = jwtDecode(token);
-                    this.role = decoded.role;
-                } catch (error) {
-                    console.error('Invalid token:', error);
-                    this.logout();
-                }
-            }
+            this.token = localStorage.getItem('token') || '';
+            this.refreshToken = localStorage.getItem('refreshToken') || '';
+            this.name = localStorage.getItem('name') || '';
+            this.role = localStorage.getItem('role') || '';
+            this.avatar = localStorage.getItem('avatar') || '';
         }
     }
 })
