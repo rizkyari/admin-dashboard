@@ -8,6 +8,9 @@
             <RouterLink to="/products" class="block px-3 py-2 rounded hover:bg-gray-200" active-class="bg-gray-200 font-semibold">
                 Products
             </RouterLink>
+            <RouterLink to="/create-product" class="block px-3 py-2 rounded hover:bg-gray-200" active-class="bg-gray-200 font-semibold">
+                Create Products
+            </RouterLink>
         </nav>
     </aside>
 </template>
