@@ -9,7 +9,7 @@ interface Category {
     slug: string;
 }
 
-interface Product {
+export interface Product {
     id: number;
     title: string;
     slug: string;
@@ -30,6 +30,7 @@ interface Filters {
 interface State {
     products: Product[];
     loading: boolean;
+    detailLoad: boolean;
     error: string | null;
     page: number;
     limit: number;
@@ -40,13 +41,14 @@ export const useProductStore = defineStore("product", {
     state: (): State => ({
         products: [] as Product[],
         loading: false,
+        detailLoad: false,
         error: null as string | null,
         page: 1,
         limit: 10,
         filters: {},
     }),
     actions: {
-        async fetchProducts(filters: Record<string, string | number> = {}) {
+        async fetchProducts() {
             this.loading = true;
             this.error = null;
 
@@ -64,6 +66,20 @@ export const useProductStore = defineStore("product", {
                 this.error = err.message || "Failed to load products"
             } finally {
                 this.loading = false;
+            }
+        },
+        async fetchProductById(id: number){
+            this.detailLoad = true;
+            this.error = null;
+
+            try {
+                const res = await api.get(`/products/${id}`);
+                return res.data;
+            } catch (err: any) {
+                this.error = err.message || "Failed to fetch product details";
+                return null
+            } finally {
+                this.detailLoad = false;
             }
         },
         setFilters(filters: Filters) {
