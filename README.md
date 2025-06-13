@@ -2,7 +2,7 @@
 
 This is a responsive and feature-complete **Admin Dashboard** built with **Vue 3 + TypeScript**, designed as part of a technical test.
 
-Live Demo → [https://admin-dashboard-black-three-91.vercel.app/dashboard](https://admin-dashboard-black-three-91.vercel.app/dashboard)
+Live Demo → [https://admin-dashboard-black-three-91.vercel.app/dashboard](https://admin-dashboard-black-three-91.vercel.app)
 
 ---
 
