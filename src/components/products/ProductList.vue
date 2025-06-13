@@ -1,11 +1,11 @@
 <template>
-    <div class="p-6">
+    <div class="p-2 sm:p-6">
         <div class="flex justify-between items-center">
             <h2 class="text-2xl font-bold mb-4">All Products</h2>
-            <button @click="openCreateModal" class="bg-green-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-500">+ Add</button>
+            <button @click="openCreateModal" class="bg-green-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-500">Add</button>
         </div>
         <ProductFilter @apply-filters="handleFilterApply"/>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
             <ProductSkeleton v-if="store.loading" v-for="n in 10" :key="n"/>
             <ProductCard v-else v-for="item in store.products" :key="item.id" :product="item" @click="openModal(item)"/>
         </div>

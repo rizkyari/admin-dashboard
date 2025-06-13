@@ -13,10 +13,10 @@
                     <div class="flex justify-between items-center mb-2">
                         <div class="flex justify-end mt-6 gap-2 my-3">
                             <button @click="emit('delete', product.id)" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 cursor-pointer">
-                                Delete
+                                &#x1F5D1; Delete
                             </button>
                             <button @click="emit('edit', product)" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer">
-                                Edit
+                                &#x270E; Edit
                             </button>
                         </div>
                         <button @click="close" class="cursor-pointer text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
