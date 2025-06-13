@@ -1,6 +1,6 @@
 <template>
     <DefaultLayout>
-        <div class="p-6 sm:p-10">
+        <div class="p-2 sm:p-6">
             <h1 class="text 2xl sm:text-4xl font-bold mb-4">
                 Welcome back, {{ auth.name }}!
             </h1>

@@ -8,10 +8,14 @@
             <div class="bg-white w-full max-w-2xl mx-4 sm:mx-auto rounded-lg p-6">
                 <h2 class="text-xl font-bold mb-4">Edit Product</h2>
                 <form @submit.prevent="submit">
-                    <input v-model="form.title" type="text" placeholder="Title" class="input mb-2 w-full" />
-                    <input v-model.number="form.price" type="number" placeholder="Price" class="input mb-2 w-full" />
-                    <input v-model="form.description" type="text" placeholder="Description" class="input mb-2 w-full" />
-                    <input v-model="form.images[0]" type="text" placeholder="Image URL" class="input mb-4 w-full" />
+                    <label class="block font-medium mb-2">Title</label>
+                    <input v-model="form.title" type="text" placeholder="Title" class="input mb-2 w-full border rounded p-1" />
+                    <label class="block font-medium mb-2">Price</label>
+                    <input v-model.number="form.price" type="number" placeholder="Price" class="input mb-2 w-full border rounded p-1" />
+                    <label class="block font-medium mb-2">Description</label>
+                    <input v-model="form.description" type="text" placeholder="Description" class="input mb-2 w-full border rounded p-1" />
+                    <label class="block font-medium mb-2">Images</label>
+                    <input v-model="form.images[0]" type="text" placeholder="Image URL" class="input mb-4 w-full border rounded p-1" />
 
                     <div class="flex justify-end gap-4">
                         <button type="button" @click="close" class="cursor-pointer px-4 py-2 bg-gray-400 text-white rounded hover:bg-gray-300">Cancel</button>
