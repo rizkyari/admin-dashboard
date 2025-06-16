@@ -5,9 +5,27 @@
             <button @click="openCreateModal" class="bg-green-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-green-500">Add</button>
         </div>
         <ProductFilter @apply-filters="handleFilterApply"/>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-            <ProductSkeleton v-if="store.loading" v-for="n in 10" :key="n"/>
-            <ProductCard v-else v-for="item in store.products" :key="item.id" :product="item" @click="openModal(item)"/>
+        <div>
+            <div
+                v-if="store.loading"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4"
+            >
+                <ProductSkeleton v-for="n in 10" :key="n" />
+            </div>
+
+            <TransitionGroup
+                v-else
+                name="fade"
+                tag="div"
+                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4"
+            >
+                <ProductCard
+                    v-for="item in store.products"
+                    :key="item.id"
+                    :product="item"
+                    @click="openModal(item)"
+                />
+            </TransitionGroup>
         </div>
 
 
@@ -141,3 +159,13 @@ async function handleSubmit(payload: ProductPayload) {
   }
 }
 </script>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: all 0.4s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+}
+</style>

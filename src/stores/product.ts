@@ -35,6 +35,11 @@ interface Filters {
     categorySlug?: string;
 }
 
+interface DashboardStats {
+  total: number;
+  maxPrice: number;
+}
+
 interface State {
     products: Product[];
     loading: boolean;
@@ -45,6 +50,7 @@ interface State {
     page: number;
     limit: number;
     filters: Filters;
+    dashboardStats: DashboardStats;
 }
 
 export const useProductStore = defineStore("product", {
@@ -58,6 +64,10 @@ export const useProductStore = defineStore("product", {
         limit: 10,
         filters: {},
         uploadLoading: false,
+        dashboardStats: {
+            total: 0,
+            maxPrice: 0,
+        },
     }),
     actions: {
         async fetchProducts() {
@@ -78,6 +88,23 @@ export const useProductStore = defineStore("product", {
                 this.error = err.message || "Failed to load products"
             } finally {
                 this.loading = false;
+            }
+        },
+        async fetchDashboardStats() {
+            this.loading = true;
+            this.error = null;
+
+            try {
+                const res = await api.get('/products');
+                const products: Product[] = res.data;
+
+                this.dashboardStats.total = products.length;
+                this.dashboardStats.maxPrice = Math.max(...products.map(p => p.price));
+            } catch (error: any) {
+                this.errorUpload = error.message || "Failed to get product data";
+                return null;
+            } finally {
+                this.loading = false
             }
         },
         async uploadImage(data: FormData): Promise<string | null> {
