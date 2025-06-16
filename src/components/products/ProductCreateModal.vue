@@ -53,28 +53,52 @@
                             </option>
                         </select>
                     </div>
-
                     <div>
                         <label class="block font-medium mb-2">Image URL</label>
                         <input
-                        v-model="form.image"
-                        type="text"
-                        required
-                        class="w-full border px-3 py-2 rounded"
-                        placeholder="Input the image url here..."
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        @change="handleFileChange"
+                        ref="fileInput"
+                        class="hidden"
                         />
+                         <button
+                        type="button"
+                        @click="fileInput?.click()"
+                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500 cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        :disabled="product.uploadLoading"
+                        >
+                            {{ product.uploadLoading ? 'Uploading...' : 'Choose Images' }}
+                        </button>
+                        <p v-if="product.uploadLoading" class="text-blue-600 mt-1">Uploading image...</p>
+                        <div v-if="uploadedImages.length > 0" class="space-y-1 mt-2">
+                            <div
+                            v-for="(img, i) in uploadedImages"
+                            :key="i"
+                            class="flex items-center justify-between bg-gray-100 px-3 py-2 rounded"
+                            >
+                                <span class="text-sm truncate">{{ img.name }}</span>
+                                <button
+                                    type="button"
+                                    @click="removeUploadedImage(i)"
+                                    class="text-red-600 hover:underline cursor-pointer"
+                                >
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <p class="text-red-600">{{ formError }}</p>
 
                     <div class="flex justify-end gap-2">
                         <button
                         type="submit"
-                        class="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-500"
-                        :disabled="product.loading"
+                        class="bg-blue-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        :disabled="product.loading || product.uploadLoading"
                         >
                             {{ product.loading ? 'Saving...' : 'Save'}}
                         </button>
-                        <button @click="showConfirmCancel = true" class="bg-red-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-500" :disabled="product.loading">Cancel</button>
+                        <button @click="showConfirmCancel = true" class="bg-red-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-500 disabled:bg-gray-400 disabled:cursor-not-allowed" :disabled="product.loading || product.uploadLoading">Cancel</button>
                     </div>
                 </form>
             </div>
@@ -120,12 +144,18 @@ defineProps<{
     show: boolean;
 }>();
 
+type UploadedImage = {
+  name: string;
+  url: string;
+};
+const uploadedImages = ref<UploadedImage[]>([])
+
 const form = reactive({
     title: '',
     price: 0,
     description: '',
     categoryId: 0,
-    image: ''
+    images: [] as string[],
 });
 
 function emitSubmit() {
@@ -134,7 +164,7 @@ function emitSubmit() {
         price: form.price,
         description: form.description,
         categoryId: form.categoryId,
-        images: [form.image],
+        images: form.images,
     });
 
     showConfirmSave.value = false;
@@ -144,13 +174,39 @@ function close() {
     emit('close');
 }
 
+const fileInput = ref<HTMLInputElement | null>(null)
+const handleFileChange = async (e: Event) => {
+    const files = (e.target as HTMLInputElement).files
+    if (!files || files.length === 0) return
+
+    for (const file of Array.from(files)) {
+        const formData = new FormData()
+        formData.append('file', file)
+
+        const url = await product.uploadImage(formData)
+        if (url) {
+            uploadedImages.value.push({
+                name: file.name,
+                url
+            })
+        }
+    }
+
+  form.images = uploadedImages.value.map(i => i.url)
+}
+
+const removeUploadedImage = (index: number) => {
+  uploadedImages.value.splice(index, 1)
+  form.images = uploadedImages.value.map(i => i.url)
+}
+
 function handleSubmit() {
     if (
         !form.title ||
         !form.price ||
         !form.description ||
         !form.categoryId ||
-        !form.image
+        form.images.length === 0
   ) {
         formError.value = 'All of the form must be filled';
         showConfirmSave.value = false;
