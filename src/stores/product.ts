@@ -39,6 +39,8 @@ interface State {
     products: Product[];
     loading: boolean;
     detailLoad: boolean;
+    uploadLoading: boolean,
+    errorUpload: string | null,
     error: string | null;
     page: number;
     limit: number;
@@ -51,9 +53,11 @@ export const useProductStore = defineStore("product", {
         loading: false,
         detailLoad: false,
         error: null as string | null,
+        errorUpload: null as string | null,
         page: 1,
         limit: 10,
         filters: {},
+        uploadLoading: false,
     }),
     actions: {
         async fetchProducts() {
@@ -74,6 +78,24 @@ export const useProductStore = defineStore("product", {
                 this.error = err.message || "Failed to load products"
             } finally {
                 this.loading = false;
+            }
+        },
+        async uploadImage(data: FormData): Promise<string | null> {
+            this.uploadLoading = true;
+            this.errorUpload = null;
+
+            try {
+                const res = await api.post(`/files/upload`, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                });
+                return res.data.location; // URL gambar hasil upload
+            } catch (error: any) {
+                this.errorUpload = error.message || "Failed to upload image";
+                return null;
+            } finally {
+                this.uploadLoading = false;
             }
         },
         async fetchProductById(id: number){
